@@ -52,8 +52,7 @@ def talk_to_terminal():
     global bluetooth_terminal
 
     bluetooth_terminal.attach_listener()
-    # TODO fix this race condition stuff first 
-    #bluetooth_terminal.attach_print() 
+    bluetooth_terminal.attach_print() 
     print("now talking to bluetooth terminal. Input any valid commands. For a list, input -h, To quit press -q")
 
     while 1:

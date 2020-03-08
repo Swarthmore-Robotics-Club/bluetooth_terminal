@@ -96,9 +96,7 @@ class BluetoothTerminal():
         return 
 
     def send(self, data):
-        #TODO might need to encode data for anything larger than a character long
-        self.bluetooth_socket.send(data)
-
+        self.bluetooth_socket.send(data.encode('utf8'))
         return
 
     def recv_daemon(self):
@@ -107,21 +105,28 @@ class BluetoothTerminal():
         """
         while self.connected:
             data = self.bluetooth_socket.recv(1024)
-
-            # TODO add race condition shtuff
-            self.__buffer += data.decode("utf-8") 
+            self.condition.acquire()
+            self.__buffer += data.decode("utf-8")
+            self.condition.notify()
+            self.condition.release()
 
     def read_buffer(self):
-        #TODO RACE CONDITION SHTUFF GOES HERE
+        self.condition.acquire()
+        if len(self.__buffer) == 0:
+            self.condition.wait()
         to_return = self.__buffer
         self.__buffer = ""
-        return  to_return
+        self.condition.release()
+        return to_return
 
     def print_daemon(self):
-        #TODO DID SOMEONE SAY RACE CONDITION?!??!
-        # should work if we just fix the read_buffer race condition
-        to_print = self.read_buffer()
-        self.print_to_terminal(to_print)
+        while self.connected:
+            #TODO DID SOMEONE SAY HARD CODING LENGTH VALUES!??!
+            if len(self.__buffer) > 5:
+                #TODO UH OH JIMBO FIX THIS BY ADDING A LENGTH HEADER AMIRITE
+                to_print = self.read_buffer()
+
+                self.print_to_terminal(to_print)
         return
 
     def attach_listener(self):
@@ -177,7 +182,7 @@ class BluetoothTerminal():
 
     def can_read(self):
 
-        return len(self.__buffer) == 0
+        return len(self.__buffer) != 0
 
     def __choose_cached_list(self):
 
