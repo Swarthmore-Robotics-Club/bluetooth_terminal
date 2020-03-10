@@ -13,12 +13,16 @@
   "homepage": "./",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.9.5",
+    "@material-ui/icons": "^4.9.1",
     "cross-env": "^6.0.3",
+    "draft-js": "^0.11.4",
     "electron-is-dev": "^1.1.0",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.4.0"
+    "react-scripts": "^3.4.0",
+    "zeromq": "^6.0.0-beta.5"
   },
   "scripts": {
     "start-react": "react-scripts start",
